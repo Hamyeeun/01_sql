@@ -707,7 +707,8 @@ SELECT d.deptno --숫자
       ,d.loc  --문자
   FROM dept d
 ;
-/*
+
+/* 합집합의 컬럼명은 첫번째 쿼리의 컬럼 이름이 선택됨
 EMPNO,  ENAME,      JOB
 -----------------------------
 10	    ACCOUNTING	NEW YORK
@@ -729,3 +730,48 @@ EMPNO,  ENAME,      JOB
 8888	J%JANMES	CLERK
 9999	J_JAMES	    CLERK
 */
+
+-- (2)MINUS 차집합
+SELECT e.empno --숫자
+      , e.ename --문자
+      , e.job --문자
+  FROM emp e
+ MINUS
+SELECT d.deptno --숫자
+      , d.dname --문자
+      ,d.loc  --문자
+  FROM dept d
+;
+/*
+EMPNO,  ENAME,      JOB
+-----------------------------
+7369	SMITH	    CLERK
+7499	ALLEN	    SALESMAN
+7521	WARD	    SALESMAN
+7566	JONES	    MANAGER
+7654	MARTIN	    SALESMAN
+7698	BLAKE	    MANAGER
+7782	CLARK	    MANAGER
+7839	KING	    PRESIDENT
+7844	TURNER	    SALESMAN
+7900	JAMES	    CLERK
+7902	FORD	    ANALYST
+7934	MILLER	    CLERK
+8888	J%JANMES	CLERK
+9999	J_JAMES	    CLERK
+*/
+
+-- (3) INTERSECT
+SELECT e.empno --숫자
+      , e.ename --문자
+      , e.job --문자
+  FROM emp e
+INTERSECT
+SELECT d.deptno --숫자
+      , d.dname --문자
+      ,d.loc  --문자
+  FROM dept d
+;
+--> 인출된 모든 행 : 0 ==> 조회 성공, 결과가 없을 뿐
+-- 서로 다른 테이블의 데이터 조회 결과들을 가진 쿼리임으로
+-- 중복된 데이터가 없으므로 교집합 결과가 1행도 없음.
