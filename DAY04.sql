@@ -419,3 +419,313 @@ EMPNO,  ENAME,  SAL
 7369	SMITH	800
 7900	JAMES	950
 */
+
+-------------------------------------------
+-- EXISTS 연산자 : 어떤 쿼리(SELECT구문)을 실행한 결과가
+--                  1행 이상일 때 참으로 판단
+--                  인출된 모든 행 : 0인 경우 거짓으로 판단
+--                  따라서 서브쿼리와 함께 사용됨
+
+-- 29)
+--    (1) 급여가 3000이 넘는 직원을 조회(사번, 이름, 급여)
+SELECT e.empno
+      , e.ename
+      , e.sal
+  FROM emp e
+ WHERE e.sal > 3000
+;
+--7839	KING	5000
+-- 29-(1) 문제의 결과는 1행이 존재(EXISTS)
+--    (2) 급여가 3000이 넘는 직원이 1명이라도 존재하면
+--        화면에 "급여가 3000이 넘는 직원이 존재함"
+--        이라는 메세지를 출력하고 싶다.
+
+SELECT '급여가 3000이 넘는 직원이 존재함' AS "시스템 메세지"
+  FROM dual --1행만 데이터 있는 공용 테이블
+ WHERE EXISTS (SELECT e.empno
+                      , e.ename
+                      , e.sal
+                  FROM emp e
+                 WHERE e.sal > 3000)
+;
+
+-- oracle 에만 존재하는 dual 테이블
+-- : 1행 1열의 데이터가 들어있는 공용 테이블
+-- 1) dual 테이블의 구조를 확인
+DESC dual;
+-- 위의 DESC는 정렬의 키워드가 아닌 오라클 명령어
+-- 테이블의 고조를 확인하는 명령
+-- Describe의 약자
+/*
+이름    널? 유형          
+----- -- ----------- 
+DUMMY    VARCHAR2(1) 
+*/
+SELECT dummy --시스템 테이블(무조건 한개만 얻어낼수 있도록 제공)
+FROM dual
+;
+/*
+DUMMY
+-------
+X
+*/
+
+-- 급여가 10000이 넘는 직원이 없으면 
+--  화면에 "급여가 10000이 넘는 직원이 존재하지 않음"이라고 출력
+--(1) 급여가 10000이 넘는 직원의 정보를 조회
+SELECT e.empno
+      , e.ename
+      , e.sal
+  FROM emp e
+ WHERE e.sal > 10000
+;
+
+--(2)시스템 메세지를 출력할 수 있도록 쿼리 조합
+SELECT '급여가 10000이 넘는 직원이 존재하지 않음' AS "시스템 메세지"
+  FROM dual --1행만 데이터 있는 공용 테이블
+ WHERE NOT EXISTS (SELECT e.empno
+                          , e.ename
+                          , e.sal
+                       FROM emp e
+                      WHERE e.sal > 10000)
+;
+
+---------------------------------------------------------------------------
+--(6) 연산자 : 결합연산자(||)
+--    오라클에만 존재, 문자열 결합(접합)
+--    다른 프로그래밍 언어(JAVA, C, C++등) 에서는
+--    OR연산자로 사용되므로 혼동하면 안됨!
+
+SELECT 'Hello~, sql' || ' in oracle!' AS greeting
+  FROM dual
+;
+--Hello~, sql in oracle!
+
+SELECT '안녕하세요~, SQL' ||'오라클에서 배우고 있어요!' AS greeting
+  FROM dual
+;
+--안녕하세요~, SQL오라클에서 배우고 있어요!
+
+-- dual 테이블 활용, 오늘의 날짜를 알려주는 문장
+-- "오늘의 날짜는000입니다"
+SELECT '오늘의 날짜는'||sysdate||'입니다.' AS "오늘의 날짜"
+  FROM dual
+;
+--오늘의 날짜는19/05/17입니다.
+
+--날짜 출력 형식을 바꿔 출력
+SELECT '오늘의 날짜는'
+        ||TO_CHAR(sysdate,'YYYY-MM-D')
+        ||'입니다.' AS "오늘의 날짜"
+  FROM dual
+;
+--오늘의 날짜는2019-05-6입니다.
+
+--직원의 사번 알림이를 만들고 싶다.
+--직원의 사번을 알려주는 구문을||을 사용하여 작성
+SELECT '안녕하세요 ' ||e.ename||'씨, 당신의 사번은'
+                     ||e.empno||'입니다.' AS "사번 알림이"
+  FROM emp e
+;
+/*
+사번 알림이
+--------------------------------------------------
+안녕하세요 J_JAMES씨, 당신의 사번은9999입니다.
+안녕하세요 J%JANMES씨, 당신의 사번은8888입니다.
+안녕하세요 SMITH씨, 당신의 사번은7369입니다.
+안녕하세요 ALLEN씨, 당신의 사번은7499입니다.
+안녕하세요 WARD씨, 당신의 사번은7521입니다.
+안녕하세요 JONES씨, 당신의 사번은7566입니다.
+안녕하세요 MARTIN씨, 당신의 사번은7654입니다.
+안녕하세요 BLAKE씨, 당신의 사번은7698입니다.
+안녕하세요 CLARK씨, 당신의 사번은7782입니다.
+안녕하세요 KING씨, 당신의 사번은7839입니다.
+안녕하세요 TURNER씨, 당신의 사번은7844입니다.
+안녕하세요 JAMES씨, 당신의 사번은7900입니다.
+안녕하세요 FORD씨, 당신의 사번은7902입니다.
+안녕하세요 MILLER씨, 당신의 사번은7934입니다.
+*/
+
+----------------------------------------------------
+-- (6) 연산자 6. 집합연산자
+-- 첫번째 쿼리 : 부서 테이블의 모든 정보 조회=> 4행 데이터
+SELECT d.deptno
+      , d.dname
+      , d.loc
+  FROM dept d
+;
+
+-- 두번째 쿼리 : 부서번호가 10인 부서의 정보 조회=> 1행 데이터
+SELECT d.deptno
+      , d.dname
+      , d.loc
+  FROM dept d
+ WHERE d.deptno=10
+;
+
+-- 1) UNION ALL : 중복을 허용한 합집합
+SELECT d.deptno
+      , d.dname
+      , d.loc
+  FROM dept d
+ UNION ALL
+SELECT d.deptno
+      , d.dname
+      , d.loc
+  FROM dept d
+ WHERE d.deptno=10
+;
+/*
+DEPTNO, DNAME,      LOC
+-----------------------------
+10	    ACCOUNTING	NEW YORK
+20	    RESEARCH	DALLAS
+30	    SALES	    CHICAGO
+40	    OPERATIONS	BOSTON
+10	    ACCOUNTING	NEW YORK
+*/
+
+--2) UNION : 중복을 제거한 합집합
+SELECT d.deptno
+      , d.dname
+      , d.loc
+  FROM dept d
+ UNION 
+SELECT d.deptno
+      , d.dname
+      , d.loc
+  FROM dept d
+ WHERE d.deptno=10
+;
+/*
+DEPTNO, DNAME,      LOC
+-----------------------------
+10	    ACCOUNTING	NEW YORK
+20	    RESEARCH	DALLAS
+30	    SALES	    CHICAGO
+40	    OPERATIONS	BOSTON
+*/
+
+--3) INTERSECT : 중복된 데이터만 남김(교집합)
+SELECT d.deptno
+      , d.dname
+      , d.loc
+  FROM dept d
+INTERSECT
+SELECT d.deptno
+      , d.dname
+      , d.loc
+  FROM dept d
+ WHERE d.deptno=10
+;
+/*
+DEPTNO, DNAME,      LOC
+-----------------------------
+10	    ACCOUNTING	NEW YORK
+*/
+
+--4) MINUS : 첫번째 쿼리 실행 결과에서
+--           두번째 쿼리 실행 결과를 뺀 차집합
+SELECT d.deptno
+      , d.dname
+      , d.loc
+  FROM dept d
+ MINUS
+SELECT d.deptno
+      , d.dname
+      , d.loc
+  FROM dept d
+ WHERE d.deptno=10
+;
+/*
+DEPTNO, DNAME,      LOC
+-----------------------------
+20	    RESEARCH	DALLAS
+30	    SALES	    CHICAGO
+40	    OPERATIONS	BOSTON
+*/
+
+-- 주의! : 두 쿼리의 조회 결과의 컬럼의 갯수, 데이터 타입의 순서가 일치
+-- 1) 오류상황 : 첫 쿼리 컬럼 수 : 3
+--               둘째쿼리 컬럼수 : 2
+SELECT d.deptno
+      , d.dname
+      , d.loc --두개의 쿼리가 컬럼 수가 맞지 않는다.
+  FROM dept d
+ UNION ALL
+SELECT d.deptno
+      , d.dname
+  FROM dept d
+ WHERE d.deptno=10
+;
+/*
+ORA-01789: 질의 블록은 부정확한 수의 결과 열을 가지고 있습니다.
+01789. 00000 -  "query block has incorrect number of result columns"
+*/
+
+-- 2) 오류상황 : 첫 쿼리는 컬럼이 문자, 숫자 순서
+--               둘째 쿼리는 컬럼이 숫자, 문자 순서
+SELECT d.dname
+      , d.deptno --두 식의 순서가 다르다.
+  FROM dept d
+ UNION ALL
+SELECT d.deptno
+      , d.dname
+  FROM dept d
+ WHERE d.deptno=10
+;
+
+/*
+ORA-01790: 대응하는 식과 같은 데이터 유형이어야 합니다
+01790. 00000 -  "expression must have same datatype as corresponding expression"
+*/
+
+-- 집합 연산자는 서로 다른 테이블의 조회 결과도
+-- 연산이 가능하다.
+-- 첫번째 쿼리 : emp 테이블에서 조회
+SELECT e.empno --숫자
+      , e.ename --문자
+      , e.job --문자
+  FROM emp e
+;
+-- 두번째 쿼리 : dept 테이블에서 조회
+SELECT d.deptno
+      , d.dname
+      ,d.loc
+  FROM dept d
+;
+
+-- 서로 다른 테이블에서
+-- (1)UNION
+SELECT e.empno --숫자
+      , e.ename --문자
+      , e.job --문자
+  FROM emp e
+ UNION
+SELECT d.deptno --숫자
+      , d.dname --문자
+      ,d.loc  --문자
+  FROM dept d
+;
+/*
+EMPNO,  ENAME,      JOB
+-----------------------------
+10	    ACCOUNTING	NEW YORK
+20	    RESEARCH	DALLAS
+30	    SALES	    CHICAGO
+40	    OPERATIONS	BOSTON
+7369	SMITH	    CLERK
+7499	ALLEN	    SALESMAN
+7521	WARD	    SALESMAN
+7566	JONES	    MANAGER
+7654	MARTIN	    SALESMAN
+7698	BLAKE	    MANAGER
+7782	CLARK	    MANAGER
+7839	KING	    PRESIDENT
+7844	TURNER	    SALESMAN
+7900	JAMES	    CLERK
+7902	FORD	    ANALYST
+7934	MILLER	    CLERK
+8888	J%JANMES	CLERK
+9999	J_JAMES	    CLERK
+*/
