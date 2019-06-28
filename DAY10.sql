@@ -631,16 +631,19 @@ SELECT e.empno  "사번"
 --      상사가 없을 때 상사이름 대신  '-' 가
 --      부서가 배정되지 않았을 때 부서명, 부서위치 대신 
 --      '-' 가 출력되도록 하시오
-SELECT e.empno  "사번"
-      , e.ename  "이름"
-      , e.mgr    "상사 사번"
-      , e1.ename  "상사 이름"
-      , d.dname  "부서명"
-      , d.loc    "부서 위치"
-  FROM emp e LEFT OUTER JOIN emp e1 ON (e.mgr = e1.empno)
-            LEFT OUTER JOIN dept d ON (e.deptno = d.deptno)
- ORDER BY "부서 위치" DESC
-;????
+SELECT e.empno  사번
+     , e.ename  이름
+     , e.job    직무
+     , NVL(e1.ename, '-') 상사이름
+     , NVL(d.dname, '-')  부서명
+     , NVL(d.loc, '-')    부서위치
+  FROM emp e
+     , emp e1
+     , dept d
+ WHERE e.mgr = e1.empno(+)
+   AND e.deptno = d.deptno(+)
+ ORDER BY d.deptno
+;
 
 
 
@@ -698,17 +701,27 @@ SELECT e.empno "사번"
 
 -- 2-2. 부서가 배정되지 않은 직원은 
 --      부서명, 부서위치 대신 '-' 이 출력되도록 하시오.
-SELECT e.empno "사번"
-      , e.ename "직원 이름"
-      , d.dname "부서명"
-  FROM emp e LEFT JOIN dept d ON (e.deptno = d.deptno)
-; ???
+SELECT e.empno  사번
+     , e.ename  이름
+     , e.sal    급여
+     , s.grade  급여등급
+     , NVL(d.dname, '-')  부서명
+     , NVL(d.loc, '-')    부서위치
+  FROM emp e
+     , dept d
+     , salgrade s
+ WHERE e.deptno = d.deptno(+)
+   AND e.sal BETWEEN s.losal AND s.hisal
+;
 
 -- 2-3. 부서별 소속 인원을  출력하시오
 --      이때 부서명으로 출력하시오
-SELECT d.dname "부서명"
---      , COUNT(*) "인원(명)"
-  FROM emp e LEFT JOIN dept d ON (e.deptno = d.deptno)
+SELECT d.dname       "부서 명"
+     , COUNT(e.empno)"인원(명)"
+  FROM emp e
+     , dept d
+ WHERE e.deptno(+) = d.deptno
+ GROUP BY d.dname
 ;
 
 /*
