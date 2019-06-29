@@ -251,11 +251,70 @@ SELECT e.employee_id
 ;
 
 ----- 5) 결합 연산자 : ||
------ (1) employees 테이블에서 전체 데이터를 대상으로 employee_id 와 월급여가 나오
------ (2)
------ (3)
+----- (1) employees 테이블에서 전체 데이터를 대상으로 employee_id 와 월급여가 나오는 모습이
+--        ex)'Steven'의 월급여는 $24000 입니다. 가 되도록 조회하시오
 
+SELECT e.employee_id "직원 ID"
+      , e.first_name || '의 월급여는 $'
+                     || e.salary
+                     || '입니다.' "월급여"
+  FROM employees e
+;
+----- (2) JOB_HISTORY 테이블에서 JOB_ID와 언제 시작하였고 언제 끝나는지에 대하여
+--        ex) 'IT_PROG는 01/01/13에 시작하였으며 06/07/24에 끝날 예정입니다.'의 형태로 조회 하시오.
+SELECT j.job_id || '는 '
+                || j.start_date
+                || '에 시작하였으며 '
+                || j.end_date
+                || '에 끝날 예정입니다.' "job 일정"
+  FROM job_history j
+;
+----- (3) LOCATIONS 테이블에서 어느나라(CITY)의 어느 위치에(STREET_ADDRESS) 위치하여 있는지
+--        ex) 'Roma의 1297 Via Cola di Rie에 위치하였습니다'형태로 조회하시오.
+SELECT l.city || '의 '
+              || l.street_address
+              || '에 위치하였습니다.' "위치"
+  FROM locations l
+;
 ----- 6) 집합 연산자 : UNION ALL, UNION, INTERSECT, MINUS
------ (1)
------ (2)
------ (3)
+----- (1) 두 개의 SELECT 문을 연결시키되 LOCATION_ID의 중복을 인정하여 DEPARTMENTS 테이블을 조회하시오.
+SELECT d.department_id
+      , d.department_name
+      , d.location_id
+      , d.manager_id
+  FROM departments d UNION ALL
+SELECT d.department_id
+      , d.department_name
+      , d.location_id
+      , d.manager_id
+  FROM departments d
+ WHERE d.location_id = 1700
+;
+----- (2) 두 개의 SELECT 문을 연결시키되 LOCATION_ID의 중복을 제거 한 후 DEPARTMENTS 테이블을 조회하시오.
+SELECT d.department_id
+      , d.department_name
+      , d.location_id
+      , d.manager_id
+  FROM departments d UNION
+SELECT d.department_id
+      , d.department_name
+      , d.location_id
+      , d.manager_id
+  FROM departments d
+ WHERE d.location_id = 1700
+;
+
+----- (3) DEPARTMENTS 테이블에서 두 개의 SELECT 문을 연결시키되 LOCATION_ID의 중복 값만을 조회하시오.
+SELECT d.department_id
+      , d.department_name
+      , d.location_id
+      , d.manager_id
+  FROM departments d INTERSECT
+SELECT d.department_id
+      , d.department_name
+      , d.location_id
+      , d.manager_id
+  FROM departments d
+ WHERE d.location_id = 1700
+;
+
