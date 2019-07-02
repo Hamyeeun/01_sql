@@ -323,7 +323,7 @@ VALUES ('M006', NULL, '0001', sysdate, '율도국', '도술', 13, 'M');
 -- ORA-01400: NULL을 ("SCOTT"."MEMBER"."MEMBER_NAME") 안에 삽입할 수 없습니다
 
 INSERT INTO MEMBER 
-VALUES ('M006', '홈길동', '0001', sysdate, '율도국', '도술', 5, 'M');
+VALUES ('M006', '홍길동', '0001', sysdate, '율도국', '도술', 5, 'M');
 COMMIT;
 
 -- 2. INTO 절에 컬럼 이름을 명시한 경우의 데이터 추가
@@ -501,7 +501,7 @@ UPDATE 테이블명
      ...
      [,컬럼n = 값n]
  [WHERE 조건]
-
+;
 -- 예) 홍길동의 이름을 수정시도
 UPDATE member m -- 테이블 별칭
    SET m.member_name = '길동이'
@@ -549,7 +549,7 @@ ROLLBACK;
 -- M009 멤버의 major 업데이트 구문
 UPDATE member m
    SET m.major = '역문컨'
- WHERE m.member_id = 'M009' --실수로 WHERE을 누락
+ WHERE m.member_id = 'M009'
 ;
 -- 1 행 이(가) 업데이트되었습니다.
 COMMIT; -- 변경사항을 영구적으로 반영한다.
