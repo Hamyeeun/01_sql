@@ -419,7 +419,7 @@ SELECT i.index_name
 -- 빠른 검색을 위해서 명시적으로 SELECT 에 사용하는 경우 존재
 -- HINT 절을 SELECT 에 사용한다.
 
-
+commit;
 
 
 

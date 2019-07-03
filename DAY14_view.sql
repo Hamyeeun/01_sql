@@ -123,7 +123,7 @@ SELECT v.empno
 7839	KING	ACCOUNTING	NEW YORK
 */
 
-- 4. VIEW 가 생성되면 user_views 라는 시스템 테이블에 정보가 추가됨 확인
+-- 4. VIEW 가 생성되면 user_views 라는 시스템 테이블에 정보가 추가됨 확인
 DESC user_views;
 /*
 이름                     널?       유형             
@@ -190,7 +190,7 @@ EMPNO, ENAME, MGR_NAME, DEPTNO, DNAME,      LOC
 
 
 
-
+commit;
 
 
 
